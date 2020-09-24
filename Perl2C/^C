@@ -1,0 +1,1 @@
+╭─  ashutosh   ~/Perl2C     master ● 6.60     11:14    4.93G ╰ ./perl2c$a = $a - 1;   Line: 1 token VARIABLE $aLine: 1 token OP_EQUAL: =Line: 1 token VARIABLE $aLine: 1 token OP_PLUS: -Line: 1 token POSITIVE_INT: 1Line: 1 token OP_SEMICOLON: ;>> ^C╭─  ashutosh   ~/Perl2C     master  18.60     11:15    4.93G ╰ 

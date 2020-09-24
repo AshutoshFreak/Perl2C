@@ -1,0 +1,1 @@
+<comment>"="+[^\n]*   {printf("Eating up star not followed by %s\n", yytext);}/* eat up '*'s not followed by '/'s */

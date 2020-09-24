@@ -1,0 +1,2667 @@
+Terminals unused in grammar
+
+    ERROR_MESSAGE
+    KW_STATIC
+    KW_TRUE
+    KW_FALSE
+    KW_NOT
+    KW_BOOLEAN
+    KW_BREAK
+    KW_INTEGER
+    KW_STRING
+    KW_CONTINUE
+    KW_MOD
+    KW_CHARACTER
+    KW_VOID
+    KW_END
+    KW_BEGIN
+    KW_REAL
+    KW_MAIN
+    KW_READSTRING
+    KW_READINTEGER
+    KW_READREAL
+    KW_WRITESTRING
+    KW_WRITEINTEGER
+    KW_WRITEREAL
+    POSITIVEINT
+    OP_RELTIONAL
+    OP_ASSIGNMENT
+    KW_FOR_EACH
+    OP_DIFFERENT
+    REGEX_OPERATOR
+    NEG_REGEX_OPERATOR
+    SPL_LIST_ARR_VAR
+    KW_PRINT
+    DeclarationList
+    OP_NOTEQUAL
+    OP_GREATER
+    OP_GREATEROREQUAL
+    OP_LESSOREQUAL
+    OP_LESS
+    OP_PLUS
+    OP_MINUS
+    KW_DIV
+    KW_THEN
+
+
+Grammar
+
+    0 $accept: ROOT TK_EOF
+
+    1 ROOT: ExtDeclaration
+
+    2 ExtDeclaration: StatementList
+    3               | Declaration FuncDef
+
+    4 Declaration: KW_SUB IDENTIFIER
+
+    5 ParameterList: %empty
+    6              | Parameter
+    7              | ParameterList OP_COMMA Parameter
+
+    8 Parameter: VARIABLE
+    9          | CONSTANT_STRING
+   10          | POSITIVE_INT
+   11          | REAL
+
+   12 FuncDef: LEFT_CURLY_BRACKET StatementList RIGHT_CURLY_BRACKET
+
+   13 StatementList: Statement StatementList
+   14              | Statement
+
+   15 Statement: CompoundStatement
+   16          | SelectionStatement
+   17          | FunctionCalling OP_SEMICOLON
+   18          | ExpressionStatement
+   19          | IterationStatement
+
+   20 FunctionCalling: IDENTIFIER OP_LEFT_PARENTHESIS ParameterList OP_RIGHT_PARENTHESIS
+
+   21 CompoundStatement: LEFT_CURLY_BRACKET CompoundStatement_2
+
+   22 CompoundStatement_2: RIGHT_CURLY_BRACKET
+   23                    | StatementList RIGHT_CURLY_BRACKET
+
+   24 SelectionStatement: if_main else_if_expr else_expr
+
+   25 if_main: KW_IF OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS LEFT_CURLY_BRACKET Statement RIGHT_CURLY_BRACKET
+
+   26 else_expr: %empty
+   27          | KW_ELSE LEFT_CURLY_BRACKET Statement RIGHT_CURLY_BRACKET
+
+   28 else_if_expr: %empty
+   29             | else_if_expr KW_ELSE if_main
+
+   30 ExpressionStatement: OP_SEMICOLON
+   31                    | Expression OP_SEMICOLON
+   32                    | KW_RETURN ExpressionStatement
+
+   33 IterationStatement: KW_WHILE OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS Statement
+   34                   | KW_DO Statement KW_WHILE OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS OP_SEMICOLON
+   35                   | KW_FOR OP_LEFT_PARENTHESIS Expression OP_SEMICOLON Expression OP_SEMICOLON Expression OP_RIGHT_PARENTHESIS Statement
+   36                   | KW_UNTIL OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS Statement
+
+   37 Expression: AssignmentExpression
+
+   38 AssignmentExpression: ConditionalExpression
+   39                     | UnaryExpression ASSIGN_OPER AssignmentExpression
+
+   40 ASSIGN_OPER: T_ASSIGN_OPER
+   41            | OP_EQUAL
+
+   42 ConditionalExpression: LogicalOrExpression
+   43                      | LogicalOrExpression OP_QUESTION Expression OP_COLON ConditionalExpression
+
+   44 LogicalOrExpression: LogicalAndExpression
+   45                    | LogicalOrExpression KW_OR LogicalAndExpression
+
+   46 LogicalAndExpression: InclusiveOrExpression
+   47                     | LogicalAndExpression KW_AND InclusiveOrExpression
+
+   48 InclusiveOrExpression: ExclusiveOrExpression
+   49                      | InclusiveOrExpression OP_BITWISE_OR ExclusiveOrExpression
+
+   50 ExclusiveOrExpression: AndExpression
+   51                      | ExclusiveOrExpression OP_XOR AndExpression
+
+   52 AndExpression: EqualityExpression
+   53              | AndExpression OP_BITWISE_AND EqualityExpression
+
+   54 EqualityExpression: RelationalExpression
+   55                   | EqualityExpression OP_EQUALITY RelationalExpression
+
+   56 RelationalExpression: ShiftExpression
+   57                     | RelationalExpression OP_RELATIONAL ShiftExpression
+
+   58 ShiftExpression: AdditiveExpression
+   59                | ShiftExpression OP_SHIFT AdditiveExpression
+
+   60 AdditiveExpression: MultiplicativeExpression
+   61                   | AdditiveExpression OP_ADDSUB MultiplicativeExpression
+
+   62 MultiplicativeExpression: UnaryExpression
+   63                         | MultiplicativeExpression MultDivRemOP UnaryExpression
+
+   64 MultDivRemOP: OP_MULT
+   65             | OP_DIVIS
+   66             | OP_REM
+
+   67 UnaryExpression: PostfixExpression
+   68                | OP_INCDEC UnaryExpression
+   69                | UnaryOperator UnaryExpression
+
+   70 UnaryOperator: OP_BITWISE_AND
+   71              | OP_ADDSUB
+   72              | OP_MULT
+   73              | OP_TILDE
+   74              | OP_NOT
+
+   75 PostfixExpression: PrimaryExpression
+   76                  | PostfixExpression OP_LEFT_BRACKET Expression OP_RIGHT_BRACKET
+   77                  | PostfixExpression OP_LEFT_PARENTHESIS PostfixExpression2
+   78                  | PostfixExpression DOT_OPERATOR IDENTIFIER
+   79                  | PostfixExpression OP_INCDEC
+
+   80 PostfixExpression2: OP_RIGHT_PARENTHESIS
+   81                   | ArgumentExpressionList OP_RIGHT_PARENTHESIS
+
+   82 ArgumentExpressionList: AssignmentExpression
+   83                       | ArgumentExpressionList OP_COMMA AssignmentExpression
+
+   84 PrimaryExpression: VARIABLE
+   85                  | Constant
+   86                  | OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS
+
+   87 Constant: POSITIVE_INT
+
+
+Terminals, with rules where they appear
+
+    TK_EOF (0) 0
+    error (256)
+    ERROR_MESSAGE (258)
+    KW_STATIC (259)
+    KW_TRUE (260)
+    KW_FALSE (261)
+    KW_DO (262) 34
+    KW_IF (263) 25
+    KW_NOT (264)
+    KW_BOOLEAN (265)
+    KW_BREAK (266)
+    KW_ELSE (267) 27 29
+    KW_AND (268) 47
+    KW_INTEGER (269)
+    KW_STRING (270)
+    KW_CONTINUE (271)
+    KW_FOR (272) 35
+    KW_MOD (273)
+    KW_CHARACTER (274)
+    KW_VOID (275)
+    KW_RETURN (276) 32
+    KW_END (277)
+    KW_BEGIN (278)
+    KW_REAL (279)
+    KW_WHILE (280) 33 34
+    KW_OR (281) 45
+    KW_MAIN (282)
+    KW_READSTRING (283)
+    KW_READINTEGER (284)
+    KW_READREAL (285)
+    KW_WRITESTRING (286)
+    KW_WRITEINTEGER (287)
+    KW_WRITEREAL (288)
+    VARIABLE (289) 8 84
+    IDENTIFIER <string> (290) 4 20 78
+    CONSTANT_STRING (291) 9
+    POSITIVEINT (292)
+    REAL (293) 11
+    OP_ADDSUB (294) 61 71
+    OP_INCDEC (295) 68 79
+    OP_BITWISE_OR (296) 49
+    OP_XOR (297) 51
+    OP_BITWISE_AND (298) 53 70
+    OP_MULT (299) 64 72
+    OP_DIVIS (300) 65
+    OP_REM (301) 66
+    OP_EQUAL (302) 41
+    OP_EQUALITY (303) 55
+    OP_RELTIONAL (304)
+    OP_SHIFT (305) 59
+    OP_ASSIGNMENT (306)
+    OP_SEMICOLON (307) 17 30 31 34 35
+    OP_LEFT_PARENTHESIS (308) 20 25 33 34 35 36 77 86
+    OP_RIGHT_PARENTHESIS (309) 20 25 33 34 35 36 80 81 86
+    OP_TILDE (310) 73
+    OP_COMMA (311) 7 83
+    OP_LEFT_BRACKET (312) 76
+    OP_RIGHT_BRACKET (313) 76
+    OP_NOT (314) 74
+    LEFT_CURLY_BRACKET (315) 12 21 25 27
+    RIGHT_CURLY_BRACKET (316) 12 22 23 25 27
+    KW_SUB <string> (317) 4
+    KW_FOR_EACH (318)
+    KW_UNTIL (319) 36
+    POSITIVE_INT (320) 10 87
+    OP_DIFFERENT (321)
+    REGEX_OPERATOR (322)
+    NEG_REGEX_OPERATOR (323)
+    DOT_OPERATOR (324) 78
+    SPL_LIST_ARR_VAR (325)
+    T_ASSIGN_OPER (326) 40
+    OP_COLON (327) 43
+    OP_QUESTION (328) 43
+    KW_PRINT (329)
+    DeclarationList (330)
+    OP_RELATIONAL (331) 57
+    OP_NOTEQUAL (332)
+    OP_GREATER (333)
+    OP_GREATEROREQUAL (334)
+    OP_LESSOREQUAL (335)
+    OP_LESS (336)
+    OP_PLUS (337)
+    OP_MINUS (338)
+    KW_DIV (339)
+    KW_THEN (340)
+
+
+Nonterminals, with rules where they appear
+
+    $accept (86)
+        on left: 0
+    ROOT <string> (87)
+        on left: 1
+        on right: 0
+    ExtDeclaration (88)
+        on left: 2 3
+        on right: 1
+    Declaration (89)
+        on left: 4
+        on right: 3
+    ParameterList (90)
+        on left: 5 6 7
+        on right: 7 20
+    Parameter (91)
+        on left: 8 9 10 11
+        on right: 6 7
+    FuncDef (92)
+        on left: 12
+        on right: 3
+    StatementList (93)
+        on left: 13 14
+        on right: 2 12 13 23
+    Statement (94)
+        on left: 15 16 17 18 19
+        on right: 13 14 25 27 33 34 35 36
+    FunctionCalling (95)
+        on left: 20
+        on right: 17
+    CompoundStatement (96)
+        on left: 21
+        on right: 15
+    CompoundStatement_2 (97)
+        on left: 22 23
+        on right: 21
+    SelectionStatement (98)
+        on left: 24
+        on right: 16
+    if_main (99)
+        on left: 25
+        on right: 24 29
+    else_expr (100)
+        on left: 26 27
+        on right: 24
+    else_if_expr (101)
+        on left: 28 29
+        on right: 24 29
+    ExpressionStatement (102)
+        on left: 30 31 32
+        on right: 18 32
+    IterationStatement (103)
+        on left: 33 34 35 36
+        on right: 19
+    Expression (104)
+        on left: 37
+        on right: 25 31 33 34 35 36 43 76 86
+    AssignmentExpression (105)
+        on left: 38 39
+        on right: 37 39 82 83
+    ASSIGN_OPER (106)
+        on left: 40 41
+        on right: 39
+    ConditionalExpression (107)
+        on left: 42 43
+        on right: 38 43
+    LogicalOrExpression (108)
+        on left: 44 45
+        on right: 42 43 45
+    LogicalAndExpression (109)
+        on left: 46 47
+        on right: 44 45 47
+    InclusiveOrExpression (110)
+        on left: 48 49
+        on right: 46 47 49
+    ExclusiveOrExpression (111)
+        on left: 50 51
+        on right: 48 49 51
+    AndExpression (112)
+        on left: 52 53
+        on right: 50 51 53
+    EqualityExpression (113)
+        on left: 54 55
+        on right: 52 53 55
+    RelationalExpression (114)
+        on left: 56 57
+        on right: 54 55 57
+    ShiftExpression (115)
+        on left: 58 59
+        on right: 56 57 59
+    AdditiveExpression (116)
+        on left: 60 61
+        on right: 58 59 61
+    MultiplicativeExpression (117)
+        on left: 62 63
+        on right: 60 61 63
+    MultDivRemOP (118)
+        on left: 64 65 66
+        on right: 63
+    UnaryExpression (119)
+        on left: 67 68 69
+        on right: 39 62 63 68 69
+    UnaryOperator (120)
+        on left: 70 71 72 73 74
+        on right: 69
+    PostfixExpression (121)
+        on left: 75 76 77 78 79
+        on right: 67 76 77 78 79
+    PostfixExpression2 (122)
+        on left: 80 81
+        on right: 77
+    ArgumentExpressionList (123)
+        on left: 82 83
+        on right: 81 83
+    PrimaryExpression (124)
+        on left: 84 85 86
+        on right: 75
+    Constant (125)
+        on left: 87
+        on right: 85
+
+
+State 0
+
+    0 $accept: . ROOT TK_EOF
+
+    KW_DO                shift, and go to state 1
+    KW_IF                shift, and go to state 2
+    KW_FOR               shift, and go to state 3
+    KW_RETURN            shift, and go to state 4
+    KW_WHILE             shift, and go to state 5
+    VARIABLE             shift, and go to state 6
+    IDENTIFIER           shift, and go to state 7
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_SEMICOLON         shift, and go to state 12
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    LEFT_CURLY_BRACKET   shift, and go to state 16
+    KW_SUB               shift, and go to state 17
+    KW_UNTIL             shift, and go to state 18
+    POSITIVE_INT         shift, and go to state 19
+
+    ROOT                      go to state 20
+    ExtDeclaration            go to state 21
+    Declaration               go to state 22
+    StatementList             go to state 23
+    Statement                 go to state 24
+    FunctionCalling           go to state 25
+    CompoundStatement         go to state 26
+    SelectionStatement        go to state 27
+    if_main                   go to state 28
+    ExpressionStatement       go to state 29
+    IterationStatement        go to state 30
+    Expression                go to state 31
+    AssignmentExpression      go to state 32
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 1
+
+   34 IterationStatement: KW_DO . Statement KW_WHILE OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS OP_SEMICOLON
+
+    KW_DO                shift, and go to state 1
+    KW_IF                shift, and go to state 2
+    KW_FOR               shift, and go to state 3
+    KW_RETURN            shift, and go to state 4
+    KW_WHILE             shift, and go to state 5
+    VARIABLE             shift, and go to state 6
+    IDENTIFIER           shift, and go to state 7
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_SEMICOLON         shift, and go to state 12
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    LEFT_CURLY_BRACKET   shift, and go to state 16
+    KW_UNTIL             shift, and go to state 18
+    POSITIVE_INT         shift, and go to state 19
+
+    Statement                 go to state 49
+    FunctionCalling           go to state 25
+    CompoundStatement         go to state 26
+    SelectionStatement        go to state 27
+    if_main                   go to state 28
+    ExpressionStatement       go to state 29
+    IterationStatement        go to state 30
+    Expression                go to state 31
+    AssignmentExpression      go to state 32
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 2
+
+   25 if_main: KW_IF . OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS LEFT_CURLY_BRACKET Statement RIGHT_CURLY_BRACKET
+
+    OP_LEFT_PARENTHESIS  shift, and go to state 50
+
+
+State 3
+
+   35 IterationStatement: KW_FOR . OP_LEFT_PARENTHESIS Expression OP_SEMICOLON Expression OP_SEMICOLON Expression OP_RIGHT_PARENTHESIS Statement
+
+    OP_LEFT_PARENTHESIS  shift, and go to state 51
+
+
+State 4
+
+   32 ExpressionStatement: KW_RETURN . ExpressionStatement
+
+    KW_RETURN            shift, and go to state 4
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_SEMICOLON         shift, and go to state 12
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    ExpressionStatement       go to state 52
+    Expression                go to state 31
+    AssignmentExpression      go to state 32
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 5
+
+   33 IterationStatement: KW_WHILE . OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS Statement
+
+    OP_LEFT_PARENTHESIS  shift, and go to state 53
+
+
+State 6
+
+   84 PrimaryExpression: VARIABLE .
+
+    $default  reduce using rule 84 (PrimaryExpression)
+
+
+State 7
+
+   20 FunctionCalling: IDENTIFIER . OP_LEFT_PARENTHESIS ParameterList OP_RIGHT_PARENTHESIS
+
+    OP_LEFT_PARENTHESIS  shift, and go to state 54
+
+
+State 8
+
+   71 UnaryOperator: OP_ADDSUB .
+
+    $default  reduce using rule 71 (UnaryOperator)
+
+
+State 9
+
+   68 UnaryExpression: OP_INCDEC . UnaryExpression
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    UnaryExpression    go to state 55
+    UnaryOperator      go to state 45
+    PostfixExpression  go to state 46
+    PrimaryExpression  go to state 47
+    Constant           go to state 48
+
+
+State 10
+
+   70 UnaryOperator: OP_BITWISE_AND .
+
+    $default  reduce using rule 70 (UnaryOperator)
+
+
+State 11
+
+   72 UnaryOperator: OP_MULT .
+
+    $default  reduce using rule 72 (UnaryOperator)
+
+
+State 12
+
+   30 ExpressionStatement: OP_SEMICOLON .
+
+    $default  reduce using rule 30 (ExpressionStatement)
+
+
+State 13
+
+   86 PrimaryExpression: OP_LEFT_PARENTHESIS . Expression OP_RIGHT_PARENTHESIS
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    Expression                go to state 56
+    AssignmentExpression      go to state 32
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 14
+
+   73 UnaryOperator: OP_TILDE .
+
+    $default  reduce using rule 73 (UnaryOperator)
+
+
+State 15
+
+   74 UnaryOperator: OP_NOT .
+
+    $default  reduce using rule 74 (UnaryOperator)
+
+
+State 16
+
+   21 CompoundStatement: LEFT_CURLY_BRACKET . CompoundStatement_2
+
+    KW_DO                shift, and go to state 1
+    KW_IF                shift, and go to state 2
+    KW_FOR               shift, and go to state 3
+    KW_RETURN            shift, and go to state 4
+    KW_WHILE             shift, and go to state 5
+    VARIABLE             shift, and go to state 6
+    IDENTIFIER           shift, and go to state 7
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_SEMICOLON         shift, and go to state 12
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    LEFT_CURLY_BRACKET   shift, and go to state 16
+    RIGHT_CURLY_BRACKET  shift, and go to state 57
+    KW_UNTIL             shift, and go to state 18
+    POSITIVE_INT         shift, and go to state 19
+
+    StatementList             go to state 58
+    Statement                 go to state 24
+    FunctionCalling           go to state 25
+    CompoundStatement         go to state 26
+    CompoundStatement_2       go to state 59
+    SelectionStatement        go to state 27
+    if_main                   go to state 28
+    ExpressionStatement       go to state 29
+    IterationStatement        go to state 30
+    Expression                go to state 31
+    AssignmentExpression      go to state 32
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 17
+
+    4 Declaration: KW_SUB . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 60
+
+
+State 18
+
+   36 IterationStatement: KW_UNTIL . OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS Statement
+
+    OP_LEFT_PARENTHESIS  shift, and go to state 61
+
+
+State 19
+
+   87 Constant: POSITIVE_INT .
+
+    $default  reduce using rule 87 (Constant)
+
+
+State 20
+
+    0 $accept: ROOT . TK_EOF
+
+    TK_EOF  shift, and go to state 62
+
+
+State 21
+
+    1 ROOT: ExtDeclaration .
+
+    $default  reduce using rule 1 (ROOT)
+
+
+State 22
+
+    3 ExtDeclaration: Declaration . FuncDef
+
+    LEFT_CURLY_BRACKET  shift, and go to state 63
+
+    FuncDef  go to state 64
+
+
+State 23
+
+    2 ExtDeclaration: StatementList .
+
+    $default  reduce using rule 2 (ExtDeclaration)
+
+
+State 24
+
+   13 StatementList: Statement . StatementList
+   14              | Statement .
+
+    KW_DO                shift, and go to state 1
+    KW_IF                shift, and go to state 2
+    KW_FOR               shift, and go to state 3
+    KW_RETURN            shift, and go to state 4
+    KW_WHILE             shift, and go to state 5
+    VARIABLE             shift, and go to state 6
+    IDENTIFIER           shift, and go to state 7
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_SEMICOLON         shift, and go to state 12
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    LEFT_CURLY_BRACKET   shift, and go to state 16
+    KW_UNTIL             shift, and go to state 18
+    POSITIVE_INT         shift, and go to state 19
+
+    $default  reduce using rule 14 (StatementList)
+
+    StatementList             go to state 65
+    Statement                 go to state 24
+    FunctionCalling           go to state 25
+    CompoundStatement         go to state 26
+    SelectionStatement        go to state 27
+    if_main                   go to state 28
+    ExpressionStatement       go to state 29
+    IterationStatement        go to state 30
+    Expression                go to state 31
+    AssignmentExpression      go to state 32
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 25
+
+   17 Statement: FunctionCalling . OP_SEMICOLON
+
+    OP_SEMICOLON  shift, and go to state 66
+
+
+State 26
+
+   15 Statement: CompoundStatement .
+
+    $default  reduce using rule 15 (Statement)
+
+
+State 27
+
+   16 Statement: SelectionStatement .
+
+    $default  reduce using rule 16 (Statement)
+
+
+State 28
+
+   24 SelectionStatement: if_main . else_if_expr else_expr
+
+    $default  reduce using rule 28 (else_if_expr)
+
+    else_if_expr  go to state 67
+
+
+State 29
+
+   18 Statement: ExpressionStatement .
+
+    $default  reduce using rule 18 (Statement)
+
+
+State 30
+
+   19 Statement: IterationStatement .
+
+    $default  reduce using rule 19 (Statement)
+
+
+State 31
+
+   31 ExpressionStatement: Expression . OP_SEMICOLON
+
+    OP_SEMICOLON  shift, and go to state 68
+
+
+State 32
+
+   37 Expression: AssignmentExpression .
+
+    $default  reduce using rule 37 (Expression)
+
+
+State 33
+
+   38 AssignmentExpression: ConditionalExpression .
+
+    $default  reduce using rule 38 (AssignmentExpression)
+
+
+State 34
+
+   42 ConditionalExpression: LogicalOrExpression .
+   43                      | LogicalOrExpression . OP_QUESTION Expression OP_COLON ConditionalExpression
+   45 LogicalOrExpression: LogicalOrExpression . KW_OR LogicalAndExpression
+
+    KW_OR        shift, and go to state 69
+    OP_QUESTION  shift, and go to state 70
+
+    $default  reduce using rule 42 (ConditionalExpression)
+
+
+State 35
+
+   44 LogicalOrExpression: LogicalAndExpression .
+   47 LogicalAndExpression: LogicalAndExpression . KW_AND InclusiveOrExpression
+
+    KW_AND  shift, and go to state 71
+
+    $default  reduce using rule 44 (LogicalOrExpression)
+
+
+State 36
+
+   46 LogicalAndExpression: InclusiveOrExpression .
+   49 InclusiveOrExpression: InclusiveOrExpression . OP_BITWISE_OR ExclusiveOrExpression
+
+    OP_BITWISE_OR  shift, and go to state 72
+
+    $default  reduce using rule 46 (LogicalAndExpression)
+
+
+State 37
+
+   48 InclusiveOrExpression: ExclusiveOrExpression .
+   51 ExclusiveOrExpression: ExclusiveOrExpression . OP_XOR AndExpression
+
+    OP_XOR  shift, and go to state 73
+
+    $default  reduce using rule 48 (InclusiveOrExpression)
+
+
+State 38
+
+   50 ExclusiveOrExpression: AndExpression .
+   53 AndExpression: AndExpression . OP_BITWISE_AND EqualityExpression
+
+    OP_BITWISE_AND  shift, and go to state 74
+
+    $default  reduce using rule 50 (ExclusiveOrExpression)
+
+
+State 39
+
+   52 AndExpression: EqualityExpression .
+   55 EqualityExpression: EqualityExpression . OP_EQUALITY RelationalExpression
+
+    OP_EQUALITY  shift, and go to state 75
+
+    $default  reduce using rule 52 (AndExpression)
+
+
+State 40
+
+   54 EqualityExpression: RelationalExpression .
+   57 RelationalExpression: RelationalExpression . OP_RELATIONAL ShiftExpression
+
+    OP_RELATIONAL  shift, and go to state 76
+
+    $default  reduce using rule 54 (EqualityExpression)
+
+
+State 41
+
+   56 RelationalExpression: ShiftExpression .
+   59 ShiftExpression: ShiftExpression . OP_SHIFT AdditiveExpression
+
+    OP_SHIFT  shift, and go to state 77
+
+    $default  reduce using rule 56 (RelationalExpression)
+
+
+State 42
+
+   58 ShiftExpression: AdditiveExpression .
+   61 AdditiveExpression: AdditiveExpression . OP_ADDSUB MultiplicativeExpression
+
+    OP_ADDSUB  shift, and go to state 78
+
+    $default  reduce using rule 58 (ShiftExpression)
+
+
+State 43
+
+   60 AdditiveExpression: MultiplicativeExpression .
+   63 MultiplicativeExpression: MultiplicativeExpression . MultDivRemOP UnaryExpression
+
+    OP_MULT   shift, and go to state 79
+    OP_DIVIS  shift, and go to state 80
+    OP_REM    shift, and go to state 81
+
+    $default  reduce using rule 60 (AdditiveExpression)
+
+    MultDivRemOP  go to state 82
+
+
+State 44
+
+   39 AssignmentExpression: UnaryExpression . ASSIGN_OPER AssignmentExpression
+   62 MultiplicativeExpression: UnaryExpression .
+
+    OP_EQUAL       shift, and go to state 83
+    T_ASSIGN_OPER  shift, and go to state 84
+
+    $default  reduce using rule 62 (MultiplicativeExpression)
+
+    ASSIGN_OPER  go to state 85
+
+
+State 45
+
+   69 UnaryExpression: UnaryOperator . UnaryExpression
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    UnaryExpression    go to state 86
+    UnaryOperator      go to state 45
+    PostfixExpression  go to state 46
+    PrimaryExpression  go to state 47
+    Constant           go to state 48
+
+
+State 46
+
+   67 UnaryExpression: PostfixExpression .
+   76 PostfixExpression: PostfixExpression . OP_LEFT_BRACKET Expression OP_RIGHT_BRACKET
+   77                  | PostfixExpression . OP_LEFT_PARENTHESIS PostfixExpression2
+   78                  | PostfixExpression . DOT_OPERATOR IDENTIFIER
+   79                  | PostfixExpression . OP_INCDEC
+
+    OP_INCDEC            shift, and go to state 87
+    OP_LEFT_PARENTHESIS  shift, and go to state 88
+    OP_LEFT_BRACKET      shift, and go to state 89
+    DOT_OPERATOR         shift, and go to state 90
+
+    $default  reduce using rule 67 (UnaryExpression)
+
+
+State 47
+
+   75 PostfixExpression: PrimaryExpression .
+
+    $default  reduce using rule 75 (PostfixExpression)
+
+
+State 48
+
+   85 PrimaryExpression: Constant .
+
+    $default  reduce using rule 85 (PrimaryExpression)
+
+
+State 49
+
+   34 IterationStatement: KW_DO Statement . KW_WHILE OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS OP_SEMICOLON
+
+    KW_WHILE  shift, and go to state 91
+
+
+State 50
+
+   25 if_main: KW_IF OP_LEFT_PARENTHESIS . Expression OP_RIGHT_PARENTHESIS LEFT_CURLY_BRACKET Statement RIGHT_CURLY_BRACKET
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    Expression                go to state 92
+    AssignmentExpression      go to state 32
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 51
+
+   35 IterationStatement: KW_FOR OP_LEFT_PARENTHESIS . Expression OP_SEMICOLON Expression OP_SEMICOLON Expression OP_RIGHT_PARENTHESIS Statement
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    Expression                go to state 93
+    AssignmentExpression      go to state 32
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 52
+
+   32 ExpressionStatement: KW_RETURN ExpressionStatement .
+
+    $default  reduce using rule 32 (ExpressionStatement)
+
+
+State 53
+
+   33 IterationStatement: KW_WHILE OP_LEFT_PARENTHESIS . Expression OP_RIGHT_PARENTHESIS Statement
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    Expression                go to state 94
+    AssignmentExpression      go to state 32
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 54
+
+   20 FunctionCalling: IDENTIFIER OP_LEFT_PARENTHESIS . ParameterList OP_RIGHT_PARENTHESIS
+
+    VARIABLE         shift, and go to state 95
+    CONSTANT_STRING  shift, and go to state 96
+    REAL             shift, and go to state 97
+    POSITIVE_INT     shift, and go to state 98
+
+    $default  reduce using rule 5 (ParameterList)
+
+    ParameterList  go to state 99
+    Parameter      go to state 100
+
+
+State 55
+
+   68 UnaryExpression: OP_INCDEC UnaryExpression .
+
+    $default  reduce using rule 68 (UnaryExpression)
+
+
+State 56
+
+   86 PrimaryExpression: OP_LEFT_PARENTHESIS Expression . OP_RIGHT_PARENTHESIS
+
+    OP_RIGHT_PARENTHESIS  shift, and go to state 101
+
+
+State 57
+
+   22 CompoundStatement_2: RIGHT_CURLY_BRACKET .
+
+    $default  reduce using rule 22 (CompoundStatement_2)
+
+
+State 58
+
+   23 CompoundStatement_2: StatementList . RIGHT_CURLY_BRACKET
+
+    RIGHT_CURLY_BRACKET  shift, and go to state 102
+
+
+State 59
+
+   21 CompoundStatement: LEFT_CURLY_BRACKET CompoundStatement_2 .
+
+    $default  reduce using rule 21 (CompoundStatement)
+
+
+State 60
+
+    4 Declaration: KW_SUB IDENTIFIER .
+
+    $default  reduce using rule 4 (Declaration)
+
+
+State 61
+
+   36 IterationStatement: KW_UNTIL OP_LEFT_PARENTHESIS . Expression OP_RIGHT_PARENTHESIS Statement
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    Expression                go to state 103
+    AssignmentExpression      go to state 32
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 62
+
+    0 $accept: ROOT TK_EOF .
+
+    $default  accept
+
+
+State 63
+
+   12 FuncDef: LEFT_CURLY_BRACKET . StatementList RIGHT_CURLY_BRACKET
+
+    KW_DO                shift, and go to state 1
+    KW_IF                shift, and go to state 2
+    KW_FOR               shift, and go to state 3
+    KW_RETURN            shift, and go to state 4
+    KW_WHILE             shift, and go to state 5
+    VARIABLE             shift, and go to state 6
+    IDENTIFIER           shift, and go to state 7
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_SEMICOLON         shift, and go to state 12
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    LEFT_CURLY_BRACKET   shift, and go to state 16
+    KW_UNTIL             shift, and go to state 18
+    POSITIVE_INT         shift, and go to state 19
+
+    StatementList             go to state 104
+    Statement                 go to state 24
+    FunctionCalling           go to state 25
+    CompoundStatement         go to state 26
+    SelectionStatement        go to state 27
+    if_main                   go to state 28
+    ExpressionStatement       go to state 29
+    IterationStatement        go to state 30
+    Expression                go to state 31
+    AssignmentExpression      go to state 32
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 64
+
+    3 ExtDeclaration: Declaration FuncDef .
+
+    $default  reduce using rule 3 (ExtDeclaration)
+
+
+State 65
+
+   13 StatementList: Statement StatementList .
+
+    $default  reduce using rule 13 (StatementList)
+
+
+State 66
+
+   17 Statement: FunctionCalling OP_SEMICOLON .
+
+    $default  reduce using rule 17 (Statement)
+
+
+State 67
+
+   24 SelectionStatement: if_main else_if_expr . else_expr
+   29 else_if_expr: else_if_expr . KW_ELSE if_main
+
+    KW_ELSE  shift, and go to state 105
+
+    $default  reduce using rule 26 (else_expr)
+
+    else_expr  go to state 106
+
+
+State 68
+
+   31 ExpressionStatement: Expression OP_SEMICOLON .
+
+    $default  reduce using rule 31 (ExpressionStatement)
+
+
+State 69
+
+   45 LogicalOrExpression: LogicalOrExpression KW_OR . LogicalAndExpression
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    LogicalAndExpression      go to state 107
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 108
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 70
+
+   43 ConditionalExpression: LogicalOrExpression OP_QUESTION . Expression OP_COLON ConditionalExpression
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    Expression                go to state 109
+    AssignmentExpression      go to state 32
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 71
+
+   47 LogicalAndExpression: LogicalAndExpression KW_AND . InclusiveOrExpression
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    InclusiveOrExpression     go to state 110
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 108
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 72
+
+   49 InclusiveOrExpression: InclusiveOrExpression OP_BITWISE_OR . ExclusiveOrExpression
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    ExclusiveOrExpression     go to state 111
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 108
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 73
+
+   51 ExclusiveOrExpression: ExclusiveOrExpression OP_XOR . AndExpression
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    AndExpression             go to state 112
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 108
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 74
+
+   53 AndExpression: AndExpression OP_BITWISE_AND . EqualityExpression
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    EqualityExpression        go to state 113
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 108
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 75
+
+   55 EqualityExpression: EqualityExpression OP_EQUALITY . RelationalExpression
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    RelationalExpression      go to state 114
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 108
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 76
+
+   57 RelationalExpression: RelationalExpression OP_RELATIONAL . ShiftExpression
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    ShiftExpression           go to state 115
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 108
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 77
+
+   59 ShiftExpression: ShiftExpression OP_SHIFT . AdditiveExpression
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    AdditiveExpression        go to state 116
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 108
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 78
+
+   61 AdditiveExpression: AdditiveExpression OP_ADDSUB . MultiplicativeExpression
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    MultiplicativeExpression  go to state 117
+    UnaryExpression           go to state 108
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 79
+
+   64 MultDivRemOP: OP_MULT .
+
+    $default  reduce using rule 64 (MultDivRemOP)
+
+
+State 80
+
+   65 MultDivRemOP: OP_DIVIS .
+
+    $default  reduce using rule 65 (MultDivRemOP)
+
+
+State 81
+
+   66 MultDivRemOP: OP_REM .
+
+    $default  reduce using rule 66 (MultDivRemOP)
+
+
+State 82
+
+   63 MultiplicativeExpression: MultiplicativeExpression MultDivRemOP . UnaryExpression
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    UnaryExpression    go to state 118
+    UnaryOperator      go to state 45
+    PostfixExpression  go to state 46
+    PrimaryExpression  go to state 47
+    Constant           go to state 48
+
+
+State 83
+
+   41 ASSIGN_OPER: OP_EQUAL .
+
+    $default  reduce using rule 41 (ASSIGN_OPER)
+
+
+State 84
+
+   40 ASSIGN_OPER: T_ASSIGN_OPER .
+
+    $default  reduce using rule 40 (ASSIGN_OPER)
+
+
+State 85
+
+   39 AssignmentExpression: UnaryExpression ASSIGN_OPER . AssignmentExpression
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    AssignmentExpression      go to state 119
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 86
+
+   69 UnaryExpression: UnaryOperator UnaryExpression .
+
+    $default  reduce using rule 69 (UnaryExpression)
+
+
+State 87
+
+   79 PostfixExpression: PostfixExpression OP_INCDEC .
+
+    $default  reduce using rule 79 (PostfixExpression)
+
+
+State 88
+
+   77 PostfixExpression: PostfixExpression OP_LEFT_PARENTHESIS . PostfixExpression2
+
+    VARIABLE              shift, and go to state 6
+    OP_ADDSUB             shift, and go to state 8
+    OP_INCDEC             shift, and go to state 9
+    OP_BITWISE_AND        shift, and go to state 10
+    OP_MULT               shift, and go to state 11
+    OP_LEFT_PARENTHESIS   shift, and go to state 13
+    OP_RIGHT_PARENTHESIS  shift, and go to state 120
+    OP_TILDE              shift, and go to state 14
+    OP_NOT                shift, and go to state 15
+    POSITIVE_INT          shift, and go to state 19
+
+    AssignmentExpression      go to state 121
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PostfixExpression2        go to state 122
+    ArgumentExpressionList    go to state 123
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 89
+
+   76 PostfixExpression: PostfixExpression OP_LEFT_BRACKET . Expression OP_RIGHT_BRACKET
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    Expression                go to state 124
+    AssignmentExpression      go to state 32
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 90
+
+   78 PostfixExpression: PostfixExpression DOT_OPERATOR . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 125
+
+
+State 91
+
+   34 IterationStatement: KW_DO Statement KW_WHILE . OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS OP_SEMICOLON
+
+    OP_LEFT_PARENTHESIS  shift, and go to state 126
+
+
+State 92
+
+   25 if_main: KW_IF OP_LEFT_PARENTHESIS Expression . OP_RIGHT_PARENTHESIS LEFT_CURLY_BRACKET Statement RIGHT_CURLY_BRACKET
+
+    OP_RIGHT_PARENTHESIS  shift, and go to state 127
+
+
+State 93
+
+   35 IterationStatement: KW_FOR OP_LEFT_PARENTHESIS Expression . OP_SEMICOLON Expression OP_SEMICOLON Expression OP_RIGHT_PARENTHESIS Statement
+
+    OP_SEMICOLON  shift, and go to state 128
+
+
+State 94
+
+   33 IterationStatement: KW_WHILE OP_LEFT_PARENTHESIS Expression . OP_RIGHT_PARENTHESIS Statement
+
+    OP_RIGHT_PARENTHESIS  shift, and go to state 129
+
+
+State 95
+
+    8 Parameter: VARIABLE .
+
+    $default  reduce using rule 8 (Parameter)
+
+
+State 96
+
+    9 Parameter: CONSTANT_STRING .
+
+    $default  reduce using rule 9 (Parameter)
+
+
+State 97
+
+   11 Parameter: REAL .
+
+    $default  reduce using rule 11 (Parameter)
+
+
+State 98
+
+   10 Parameter: POSITIVE_INT .
+
+    $default  reduce using rule 10 (Parameter)
+
+
+State 99
+
+    7 ParameterList: ParameterList . OP_COMMA Parameter
+   20 FunctionCalling: IDENTIFIER OP_LEFT_PARENTHESIS ParameterList . OP_RIGHT_PARENTHESIS
+
+    OP_RIGHT_PARENTHESIS  shift, and go to state 130
+    OP_COMMA              shift, and go to state 131
+
+
+State 100
+
+    6 ParameterList: Parameter .
+
+    $default  reduce using rule 6 (ParameterList)
+
+
+State 101
+
+   86 PrimaryExpression: OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS .
+
+    $default  reduce using rule 86 (PrimaryExpression)
+
+
+State 102
+
+   23 CompoundStatement_2: StatementList RIGHT_CURLY_BRACKET .
+
+    $default  reduce using rule 23 (CompoundStatement_2)
+
+
+State 103
+
+   36 IterationStatement: KW_UNTIL OP_LEFT_PARENTHESIS Expression . OP_RIGHT_PARENTHESIS Statement
+
+    OP_RIGHT_PARENTHESIS  shift, and go to state 132
+
+
+State 104
+
+   12 FuncDef: LEFT_CURLY_BRACKET StatementList . RIGHT_CURLY_BRACKET
+
+    RIGHT_CURLY_BRACKET  shift, and go to state 133
+
+
+State 105
+
+   27 else_expr: KW_ELSE . LEFT_CURLY_BRACKET Statement RIGHT_CURLY_BRACKET
+   29 else_if_expr: else_if_expr KW_ELSE . if_main
+
+    KW_IF               shift, and go to state 2
+    LEFT_CURLY_BRACKET  shift, and go to state 134
+
+    if_main  go to state 135
+
+
+State 106
+
+   24 SelectionStatement: if_main else_if_expr else_expr .
+
+    $default  reduce using rule 24 (SelectionStatement)
+
+
+State 107
+
+   45 LogicalOrExpression: LogicalOrExpression KW_OR LogicalAndExpression .
+   47 LogicalAndExpression: LogicalAndExpression . KW_AND InclusiveOrExpression
+
+    KW_AND  shift, and go to state 71
+
+    $default  reduce using rule 45 (LogicalOrExpression)
+
+
+State 108
+
+   62 MultiplicativeExpression: UnaryExpression .
+
+    $default  reduce using rule 62 (MultiplicativeExpression)
+
+
+State 109
+
+   43 ConditionalExpression: LogicalOrExpression OP_QUESTION Expression . OP_COLON ConditionalExpression
+
+    OP_COLON  shift, and go to state 136
+
+
+State 110
+
+   47 LogicalAndExpression: LogicalAndExpression KW_AND InclusiveOrExpression .
+   49 InclusiveOrExpression: InclusiveOrExpression . OP_BITWISE_OR ExclusiveOrExpression
+
+    OP_BITWISE_OR  shift, and go to state 72
+
+    $default  reduce using rule 47 (LogicalAndExpression)
+
+
+State 111
+
+   49 InclusiveOrExpression: InclusiveOrExpression OP_BITWISE_OR ExclusiveOrExpression .
+   51 ExclusiveOrExpression: ExclusiveOrExpression . OP_XOR AndExpression
+
+    OP_XOR  shift, and go to state 73
+
+    $default  reduce using rule 49 (InclusiveOrExpression)
+
+
+State 112
+
+   51 ExclusiveOrExpression: ExclusiveOrExpression OP_XOR AndExpression .
+   53 AndExpression: AndExpression . OP_BITWISE_AND EqualityExpression
+
+    OP_BITWISE_AND  shift, and go to state 74
+
+    $default  reduce using rule 51 (ExclusiveOrExpression)
+
+
+State 113
+
+   53 AndExpression: AndExpression OP_BITWISE_AND EqualityExpression .
+   55 EqualityExpression: EqualityExpression . OP_EQUALITY RelationalExpression
+
+    OP_EQUALITY  shift, and go to state 75
+
+    $default  reduce using rule 53 (AndExpression)
+
+
+State 114
+
+   55 EqualityExpression: EqualityExpression OP_EQUALITY RelationalExpression .
+   57 RelationalExpression: RelationalExpression . OP_RELATIONAL ShiftExpression
+
+    OP_RELATIONAL  shift, and go to state 76
+
+    $default  reduce using rule 55 (EqualityExpression)
+
+
+State 115
+
+   57 RelationalExpression: RelationalExpression OP_RELATIONAL ShiftExpression .
+   59 ShiftExpression: ShiftExpression . OP_SHIFT AdditiveExpression
+
+    OP_SHIFT  shift, and go to state 77
+
+    $default  reduce using rule 57 (RelationalExpression)
+
+
+State 116
+
+   59 ShiftExpression: ShiftExpression OP_SHIFT AdditiveExpression .
+   61 AdditiveExpression: AdditiveExpression . OP_ADDSUB MultiplicativeExpression
+
+    OP_ADDSUB  shift, and go to state 78
+
+    $default  reduce using rule 59 (ShiftExpression)
+
+
+State 117
+
+   61 AdditiveExpression: AdditiveExpression OP_ADDSUB MultiplicativeExpression .
+   63 MultiplicativeExpression: MultiplicativeExpression . MultDivRemOP UnaryExpression
+
+    OP_MULT   shift, and go to state 79
+    OP_DIVIS  shift, and go to state 80
+    OP_REM    shift, and go to state 81
+
+    $default  reduce using rule 61 (AdditiveExpression)
+
+    MultDivRemOP  go to state 82
+
+
+State 118
+
+   63 MultiplicativeExpression: MultiplicativeExpression MultDivRemOP UnaryExpression .
+
+    $default  reduce using rule 63 (MultiplicativeExpression)
+
+
+State 119
+
+   39 AssignmentExpression: UnaryExpression ASSIGN_OPER AssignmentExpression .
+
+    $default  reduce using rule 39 (AssignmentExpression)
+
+
+State 120
+
+   80 PostfixExpression2: OP_RIGHT_PARENTHESIS .
+
+    $default  reduce using rule 80 (PostfixExpression2)
+
+
+State 121
+
+   82 ArgumentExpressionList: AssignmentExpression .
+
+    $default  reduce using rule 82 (ArgumentExpressionList)
+
+
+State 122
+
+   77 PostfixExpression: PostfixExpression OP_LEFT_PARENTHESIS PostfixExpression2 .
+
+    $default  reduce using rule 77 (PostfixExpression)
+
+
+State 123
+
+   81 PostfixExpression2: ArgumentExpressionList . OP_RIGHT_PARENTHESIS
+   83 ArgumentExpressionList: ArgumentExpressionList . OP_COMMA AssignmentExpression
+
+    OP_RIGHT_PARENTHESIS  shift, and go to state 137
+    OP_COMMA              shift, and go to state 138
+
+
+State 124
+
+   76 PostfixExpression: PostfixExpression OP_LEFT_BRACKET Expression . OP_RIGHT_BRACKET
+
+    OP_RIGHT_BRACKET  shift, and go to state 139
+
+
+State 125
+
+   78 PostfixExpression: PostfixExpression DOT_OPERATOR IDENTIFIER .
+
+    $default  reduce using rule 78 (PostfixExpression)
+
+
+State 126
+
+   34 IterationStatement: KW_DO Statement KW_WHILE OP_LEFT_PARENTHESIS . Expression OP_RIGHT_PARENTHESIS OP_SEMICOLON
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    Expression                go to state 140
+    AssignmentExpression      go to state 32
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 127
+
+   25 if_main: KW_IF OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS . LEFT_CURLY_BRACKET Statement RIGHT_CURLY_BRACKET
+
+    LEFT_CURLY_BRACKET  shift, and go to state 141
+
+
+State 128
+
+   35 IterationStatement: KW_FOR OP_LEFT_PARENTHESIS Expression OP_SEMICOLON . Expression OP_SEMICOLON Expression OP_RIGHT_PARENTHESIS Statement
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    Expression                go to state 142
+    AssignmentExpression      go to state 32
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 129
+
+   33 IterationStatement: KW_WHILE OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS . Statement
+
+    KW_DO                shift, and go to state 1
+    KW_IF                shift, and go to state 2
+    KW_FOR               shift, and go to state 3
+    KW_RETURN            shift, and go to state 4
+    KW_WHILE             shift, and go to state 5
+    VARIABLE             shift, and go to state 6
+    IDENTIFIER           shift, and go to state 7
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_SEMICOLON         shift, and go to state 12
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    LEFT_CURLY_BRACKET   shift, and go to state 16
+    KW_UNTIL             shift, and go to state 18
+    POSITIVE_INT         shift, and go to state 19
+
+    Statement                 go to state 143
+    FunctionCalling           go to state 25
+    CompoundStatement         go to state 26
+    SelectionStatement        go to state 27
+    if_main                   go to state 28
+    ExpressionStatement       go to state 29
+    IterationStatement        go to state 30
+    Expression                go to state 31
+    AssignmentExpression      go to state 32
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 130
+
+   20 FunctionCalling: IDENTIFIER OP_LEFT_PARENTHESIS ParameterList OP_RIGHT_PARENTHESIS .
+
+    $default  reduce using rule 20 (FunctionCalling)
+
+
+State 131
+
+    7 ParameterList: ParameterList OP_COMMA . Parameter
+
+    VARIABLE         shift, and go to state 95
+    CONSTANT_STRING  shift, and go to state 96
+    REAL             shift, and go to state 97
+    POSITIVE_INT     shift, and go to state 98
+
+    Parameter  go to state 144
+
+
+State 132
+
+   36 IterationStatement: KW_UNTIL OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS . Statement
+
+    KW_DO                shift, and go to state 1
+    KW_IF                shift, and go to state 2
+    KW_FOR               shift, and go to state 3
+    KW_RETURN            shift, and go to state 4
+    KW_WHILE             shift, and go to state 5
+    VARIABLE             shift, and go to state 6
+    IDENTIFIER           shift, and go to state 7
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_SEMICOLON         shift, and go to state 12
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    LEFT_CURLY_BRACKET   shift, and go to state 16
+    KW_UNTIL             shift, and go to state 18
+    POSITIVE_INT         shift, and go to state 19
+
+    Statement                 go to state 145
+    FunctionCalling           go to state 25
+    CompoundStatement         go to state 26
+    SelectionStatement        go to state 27
+    if_main                   go to state 28
+    ExpressionStatement       go to state 29
+    IterationStatement        go to state 30
+    Expression                go to state 31
+    AssignmentExpression      go to state 32
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 133
+
+   12 FuncDef: LEFT_CURLY_BRACKET StatementList RIGHT_CURLY_BRACKET .
+
+    $default  reduce using rule 12 (FuncDef)
+
+
+State 134
+
+   27 else_expr: KW_ELSE LEFT_CURLY_BRACKET . Statement RIGHT_CURLY_BRACKET
+
+    KW_DO                shift, and go to state 1
+    KW_IF                shift, and go to state 2
+    KW_FOR               shift, and go to state 3
+    KW_RETURN            shift, and go to state 4
+    KW_WHILE             shift, and go to state 5
+    VARIABLE             shift, and go to state 6
+    IDENTIFIER           shift, and go to state 7
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_SEMICOLON         shift, and go to state 12
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    LEFT_CURLY_BRACKET   shift, and go to state 16
+    KW_UNTIL             shift, and go to state 18
+    POSITIVE_INT         shift, and go to state 19
+
+    Statement                 go to state 146
+    FunctionCalling           go to state 25
+    CompoundStatement         go to state 26
+    SelectionStatement        go to state 27
+    if_main                   go to state 28
+    ExpressionStatement       go to state 29
+    IterationStatement        go to state 30
+    Expression                go to state 31
+    AssignmentExpression      go to state 32
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 135
+
+   29 else_if_expr: else_if_expr KW_ELSE if_main .
+
+    $default  reduce using rule 29 (else_if_expr)
+
+
+State 136
+
+   43 ConditionalExpression: LogicalOrExpression OP_QUESTION Expression OP_COLON . ConditionalExpression
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    ConditionalExpression     go to state 147
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 108
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 137
+
+   81 PostfixExpression2: ArgumentExpressionList OP_RIGHT_PARENTHESIS .
+
+    $default  reduce using rule 81 (PostfixExpression2)
+
+
+State 138
+
+   83 ArgumentExpressionList: ArgumentExpressionList OP_COMMA . AssignmentExpression
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    AssignmentExpression      go to state 148
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 139
+
+   76 PostfixExpression: PostfixExpression OP_LEFT_BRACKET Expression OP_RIGHT_BRACKET .
+
+    $default  reduce using rule 76 (PostfixExpression)
+
+
+State 140
+
+   34 IterationStatement: KW_DO Statement KW_WHILE OP_LEFT_PARENTHESIS Expression . OP_RIGHT_PARENTHESIS OP_SEMICOLON
+
+    OP_RIGHT_PARENTHESIS  shift, and go to state 149
+
+
+State 141
+
+   25 if_main: KW_IF OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS LEFT_CURLY_BRACKET . Statement RIGHT_CURLY_BRACKET
+
+    KW_DO                shift, and go to state 1
+    KW_IF                shift, and go to state 2
+    KW_FOR               shift, and go to state 3
+    KW_RETURN            shift, and go to state 4
+    KW_WHILE             shift, and go to state 5
+    VARIABLE             shift, and go to state 6
+    IDENTIFIER           shift, and go to state 7
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_SEMICOLON         shift, and go to state 12
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    LEFT_CURLY_BRACKET   shift, and go to state 16
+    KW_UNTIL             shift, and go to state 18
+    POSITIVE_INT         shift, and go to state 19
+
+    Statement                 go to state 150
+    FunctionCalling           go to state 25
+    CompoundStatement         go to state 26
+    SelectionStatement        go to state 27
+    if_main                   go to state 28
+    ExpressionStatement       go to state 29
+    IterationStatement        go to state 30
+    Expression                go to state 31
+    AssignmentExpression      go to state 32
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 142
+
+   35 IterationStatement: KW_FOR OP_LEFT_PARENTHESIS Expression OP_SEMICOLON Expression . OP_SEMICOLON Expression OP_RIGHT_PARENTHESIS Statement
+
+    OP_SEMICOLON  shift, and go to state 151
+
+
+State 143
+
+   33 IterationStatement: KW_WHILE OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS Statement .
+
+    $default  reduce using rule 33 (IterationStatement)
+
+
+State 144
+
+    7 ParameterList: ParameterList OP_COMMA Parameter .
+
+    $default  reduce using rule 7 (ParameterList)
+
+
+State 145
+
+   36 IterationStatement: KW_UNTIL OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS Statement .
+
+    $default  reduce using rule 36 (IterationStatement)
+
+
+State 146
+
+   27 else_expr: KW_ELSE LEFT_CURLY_BRACKET Statement . RIGHT_CURLY_BRACKET
+
+    RIGHT_CURLY_BRACKET  shift, and go to state 152
+
+
+State 147
+
+   43 ConditionalExpression: LogicalOrExpression OP_QUESTION Expression OP_COLON ConditionalExpression .
+
+    $default  reduce using rule 43 (ConditionalExpression)
+
+
+State 148
+
+   83 ArgumentExpressionList: ArgumentExpressionList OP_COMMA AssignmentExpression .
+
+    $default  reduce using rule 83 (ArgumentExpressionList)
+
+
+State 149
+
+   34 IterationStatement: KW_DO Statement KW_WHILE OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS . OP_SEMICOLON
+
+    OP_SEMICOLON  shift, and go to state 153
+
+
+State 150
+
+   25 if_main: KW_IF OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS LEFT_CURLY_BRACKET Statement . RIGHT_CURLY_BRACKET
+
+    RIGHT_CURLY_BRACKET  shift, and go to state 154
+
+
+State 151
+
+   35 IterationStatement: KW_FOR OP_LEFT_PARENTHESIS Expression OP_SEMICOLON Expression OP_SEMICOLON . Expression OP_RIGHT_PARENTHESIS Statement
+
+    VARIABLE             shift, and go to state 6
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    POSITIVE_INT         shift, and go to state 19
+
+    Expression                go to state 155
+    AssignmentExpression      go to state 32
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 152
+
+   27 else_expr: KW_ELSE LEFT_CURLY_BRACKET Statement RIGHT_CURLY_BRACKET .
+
+    $default  reduce using rule 27 (else_expr)
+
+
+State 153
+
+   34 IterationStatement: KW_DO Statement KW_WHILE OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS OP_SEMICOLON .
+
+    $default  reduce using rule 34 (IterationStatement)
+
+
+State 154
+
+   25 if_main: KW_IF OP_LEFT_PARENTHESIS Expression OP_RIGHT_PARENTHESIS LEFT_CURLY_BRACKET Statement RIGHT_CURLY_BRACKET .
+
+    $default  reduce using rule 25 (if_main)
+
+
+State 155
+
+   35 IterationStatement: KW_FOR OP_LEFT_PARENTHESIS Expression OP_SEMICOLON Expression OP_SEMICOLON Expression . OP_RIGHT_PARENTHESIS Statement
+
+    OP_RIGHT_PARENTHESIS  shift, and go to state 156
+
+
+State 156
+
+   35 IterationStatement: KW_FOR OP_LEFT_PARENTHESIS Expression OP_SEMICOLON Expression OP_SEMICOLON Expression OP_RIGHT_PARENTHESIS . Statement
+
+    KW_DO                shift, and go to state 1
+    KW_IF                shift, and go to state 2
+    KW_FOR               shift, and go to state 3
+    KW_RETURN            shift, and go to state 4
+    KW_WHILE             shift, and go to state 5
+    VARIABLE             shift, and go to state 6
+    IDENTIFIER           shift, and go to state 7
+    OP_ADDSUB            shift, and go to state 8
+    OP_INCDEC            shift, and go to state 9
+    OP_BITWISE_AND       shift, and go to state 10
+    OP_MULT              shift, and go to state 11
+    OP_SEMICOLON         shift, and go to state 12
+    OP_LEFT_PARENTHESIS  shift, and go to state 13
+    OP_TILDE             shift, and go to state 14
+    OP_NOT               shift, and go to state 15
+    LEFT_CURLY_BRACKET   shift, and go to state 16
+    KW_UNTIL             shift, and go to state 18
+    POSITIVE_INT         shift, and go to state 19
+
+    Statement                 go to state 157
+    FunctionCalling           go to state 25
+    CompoundStatement         go to state 26
+    SelectionStatement        go to state 27
+    if_main                   go to state 28
+    ExpressionStatement       go to state 29
+    IterationStatement        go to state 30
+    Expression                go to state 31
+    AssignmentExpression      go to state 32
+    ConditionalExpression     go to state 33
+    LogicalOrExpression       go to state 34
+    LogicalAndExpression      go to state 35
+    InclusiveOrExpression     go to state 36
+    ExclusiveOrExpression     go to state 37
+    AndExpression             go to state 38
+    EqualityExpression        go to state 39
+    RelationalExpression      go to state 40
+    ShiftExpression           go to state 41
+    AdditiveExpression        go to state 42
+    MultiplicativeExpression  go to state 43
+    UnaryExpression           go to state 44
+    UnaryOperator             go to state 45
+    PostfixExpression         go to state 46
+    PrimaryExpression         go to state 47
+    Constant                  go to state 48
+
+
+State 157
+
+   35 IterationStatement: KW_FOR OP_LEFT_PARENTHESIS Expression OP_SEMICOLON Expression OP_SEMICOLON Expression OP_RIGHT_PARENTHESIS Statement .
+
+    $default  reduce using rule 35 (IterationStatement)
